@@ -151,7 +151,7 @@ export default function Dashboard() {
         {/* Dynamic Content */}
         <div className="flex-1 min-h-0">
           <AnimatePresence mode="wait">
-            {activeTab === 'stats' && <StatsView stats={stats} items={items} onEdit={(item: any) => setEditingItem(item)} onDelete={handleDelete} />}
+            {activeTab === 'stats' && <StatsView stats={stats} items={items} onEdit={(item: any) => setEditingItem(item)} onDelete={(id: number) => setItemToDelete(id)} />}
             {activeTab === 'add' && <AddFoodView onComplete={() => { setActiveTab('list'); fetchData(); }} />}
             {activeTab === 'list' && (
               <ListView 
