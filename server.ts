@@ -111,16 +111,25 @@ async function startServer() {
   // Auth Routes
   app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body;
+    console.log(`Login attempt for: ${email}`);
     try {
       const user = await db.get('SELECT * FROM users WHERE email = ?', [email]);
-      if (!user) return res.status(400).json({ message: 'User not found' });
+      if (!user) {
+        console.log(`Login failed: User ${email} not found`);
+        return res.status(400).json({ message: 'User not found' });
+      }
 
       const validPassword = await bcrypt.compare(password, user.password);
-      if (!validPassword) return res.status(400).json({ message: 'Invalid password' });
+      if (!validPassword) {
+        console.log(`Login failed: Invalid password for ${email}`);
+        return res.status(400).json({ message: 'Invalid password' });
+      }
 
+      console.log(`Login successful for: ${email}`);
       const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1h' });
       res.json({ token, user: { email: user.email } });
     } catch (error) {
+      console.error('Login error:', error);
       res.status(500).json({ message: 'Internal server error' });
     }
   });

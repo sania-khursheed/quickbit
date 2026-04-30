@@ -14,12 +14,16 @@ export default function Login() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    const trimmedEmail = email.trim();
     try {
-      const response = await api.post('/auth/login', { email, password });
+      console.log('Attempting login with:', trimmedEmail, 'to', api.defaults.baseURL + '/auth/login');
+      const response = await api.post('/auth/login', { email: trimmedEmail, password });
       login(response.data.token, response.data.user);
       toast.success('Welcome back, Admin!');
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Login failed');
+      console.error('Login error full details:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Login failed';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -86,9 +90,14 @@ export default function Login() {
           </form>
 
           <footer className="mt-8 pt-8 border-t border-slate-50 text-center">
-            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">
+            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-4">
               Secured Admin Access
             </p>
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">Preview Login</p>
+               <p className="text-xs text-slate-900 font-mono">admin@quickbite.com</p>
+               <p className="text-xs text-slate-900 font-mono">admin123</p>
+            </div>
           </footer>
         </div>
       </motion.div>
